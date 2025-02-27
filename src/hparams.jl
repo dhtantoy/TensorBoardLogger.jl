@@ -136,10 +136,8 @@ function write_hparams!(logger::TBLogger, hparams::Dict{String,<:Any}, metrics::
 
     # Check for datatypes
     for (k, v) in hparams
-        @assert typeof(v) <: Union{Bool,String,Real} "Hyperparameters must be of types String, Bool or Real"
-        # Cast non-supported numerical values to Float64
-        if !(typeof(v) <: Bool) && typeof(v) <: Real
-            hparams[k] = Float64(v)
+        if !(typeof(v) <: String) 
+            hparams[k] = hparams_preprocess(v)
         end
     end
 
@@ -169,3 +167,13 @@ function write_hparams!(logger::TBLogger, hparams::Dict{String,<:Any}, metrics::
     end
     nothing
 end
+
+"""
+    hparams_preprocess(::T) where T -> Union{Bool,String,Real}
+
+Preprocess hyperparameters of type `T` to supported types `Union{String, Float64}` before they are written to the logger. 
+"""
+function hparams_preprocess(x::T) where T
+    @error "You should define `hparams_preprocess($(typeof(x)))` to convert $(typeof(x)) to `Float64` or `String`"
+end
+hparams_preprocess(x::Union{Bool, Real}) = Float64(x)

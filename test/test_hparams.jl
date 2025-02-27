@@ -3,6 +3,10 @@ using Test
 import ProtoBuf as PB
 
 test_hparams_log_dir = "test_hparams_logs/"
+struct SelfDefinedType
+    x::Int
+end
+TensorBoardLogger.hparams_preprocess(sdt::SelfDefinedType) = "self-defined struct in which the field `x` = 5"
 
 @testset "Write Hparams" begin
     isdir(test_hparams_log_dir) && rm(test_hparams_log_dir, force=true, recursive=true)
@@ -26,7 +30,8 @@ test_hparams_log_dir = "test_hparams_logs/"
             "p2"=>sqrt(rand()),
             "p3"=>rand()^5,
             "optimisations"=>(i%2==0),
-            "method"=>rand(("MC", "SGD"))
+            "method"=>rand(("MC", "SGD")),
+            "self_defined_type"=>SelfDefinedType(1)
         )
         metrics = ["scalar/loss"]
         
